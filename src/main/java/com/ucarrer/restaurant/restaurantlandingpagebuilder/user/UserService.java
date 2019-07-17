@@ -63,10 +63,10 @@ public class UserService {
         }
     }
 
-    public Long register(User user){
+    public User register(User user){
         user.setPassword(encoder.encode(user.getPassword()));
         userRepository.save(user);
-        return user.getId();
+        return user;
     }
 
     public User confirmEmail(String token){
