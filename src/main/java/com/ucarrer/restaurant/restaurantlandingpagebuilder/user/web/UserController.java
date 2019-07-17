@@ -21,11 +21,15 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-
-        if (userService.auth(request.getUsername(), request.getPassword())) {
-            return ResponseEntity.ok("ok");
+        String token = null;
+        token = userService.auth(request.getUsername(), request.getPassword());
+        if ( token != null ) {
+            return ResponseEntity.ok(token);
         }
-        return ResponseEntity.notFound().build();
+        else{
+            return ResponseEntity.notFound().build();
+        }
+
     }
 
     @GetMapping("/forgot-password/:email")
