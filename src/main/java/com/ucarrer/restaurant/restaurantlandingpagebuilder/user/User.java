@@ -6,10 +6,11 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ucarrer.restaurant.restaurantlandingpagebuilder.enums.UserStatus;
-import jdk.jfr.Timestamp;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -32,36 +33,30 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+
     @Size(min = 3, max = 50)
     private String name;
 
-    @NotBlank
     @Size(min = 3, max = 50)
     private String username;
 
     @NaturalId
-    @NotBlank
+
     @Size(max = 50)
     @Email
     private String email;
 
-    @NotBlank
     @Size(min = 6, max = 100)
+    @JsonIgnore
     private String password;
 
-    public UserStatus getStatus() {
-        return status;
-    }
 
-    public void setStatus(UserStatus status) {
-        this.status = status;
-    }
 
     @Enumerated(EnumType.STRING)
     private UserStatus status;
 
     @Size(max = 64)
+    @JsonIgnore
     private String forgotPasswordToken;
 
     @Temporal(TIMESTAMP)
@@ -71,8 +66,8 @@ public class User {
     private Date createdAt;
 
     @Temporal(TIMESTAMP)
-    @Column(name = "modified_at", nullable = false)
-    @LastModifiedDate
+    @Column(name = "modified_at", nullable = false, columnDefinition = "TIMESTAMP  default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP")
+    @UpdateTimestamp
     private Date modifiedAt;
 
     public User() {
@@ -123,6 +118,38 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public UserStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(UserStatus status) {
+        this.status = status;
+    }
+
+    public String getForgotPasswordToken() {
+        return forgotPasswordToken;
+    }
+
+    public void setForgotPasswordToken(String forgotPasswordToken) {
+        this.forgotPasswordToken = forgotPasswordToken;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getModifiedAt() {
+        return modifiedAt;
+    }
+
+    public void setModifiedAt(Date modifiedAt) {
+        this.modifiedAt = modifiedAt;
     }
 
 

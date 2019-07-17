@@ -4,5 +4,5 @@ spring.datasource.username=ucareer
 spring.datasource.password=LSnWpGKencRi8Xj5Ar4=
 spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5Dialect
 
-spring.security.user.name=user
-spring.security.user.password=password
+ucareer.jwt.expire-in-hour=24
+ucareer.jwt.token=password

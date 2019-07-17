@@ -1,24 +1,15 @@
 package com.ucarrer.restaurant.restaurantlandingpagebuilder.user.web;
 
-public class LoginRequest {
-    private String username;
-    private String password;
-
-    public String getUsername() {
-        return username;
+public class SelfGetRequest {
+    public String getToken() {
+        return token;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setToken(String token) {
+        this.token = token;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    private String token;
 
 
 }
