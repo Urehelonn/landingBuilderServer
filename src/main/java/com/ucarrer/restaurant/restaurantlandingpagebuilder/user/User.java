@@ -7,6 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ucarrer.restaurant.restaurantlandingpagebuilder.enums.UserStatus;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.NaturalId;
@@ -41,23 +42,16 @@ public class User {
     private String username;
 
     @NaturalId
-
     @Size(max = 50)
     @Email
     private String email;
 
     @Size(min = 6, max = 100)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
-
-
 
     @Enumerated(EnumType.STRING)
     private UserStatus status;
-
-    @Size(max = 64)
-    @JsonIgnore
-    private String forgotPasswordToken;
 
     @Temporal(TIMESTAMP)
     @Column(name = "created_at", nullable = false)
@@ -126,14 +120,6 @@ public class User {
 
     public void setStatus(UserStatus status) {
         this.status = status;
-    }
-
-    public String getForgotPasswordToken() {
-        return forgotPasswordToken;
-    }
-
-    public void setForgotPasswordToken(String forgotPasswordToken) {
-        this.forgotPasswordToken = forgotPasswordToken;
     }
 
     public Date getCreatedAt() {

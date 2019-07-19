@@ -51,11 +51,11 @@ public class UserController {
         return ResponseEntity.ok(email);
     }
 
-    @GetMapping("/confirm-email/{token}")
+   /* @GetMapping("/confirm-email/{token}")
     public ResponseEntity<User> confirmEmail(@PathVariable String token) throws URISyntaxException {
         User user = userService.confirmEmail(token);
         return ResponseEntity.ok(user);
-    }
+    }*/
 
 
 }

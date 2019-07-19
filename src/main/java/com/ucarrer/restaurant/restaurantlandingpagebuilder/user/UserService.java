@@ -80,7 +80,7 @@ public class UserService {
         return user;
     }
 
-    public User confirmEmail(String token){
+    /*public User confirmEmail(String token){
         User user = userRepository.findUserByForgotPasswordToken(token).orElse(null);
         if(user != null){
             user.setStatus(UserStatus.Active);
@@ -88,7 +88,7 @@ public class UserService {
             return user;
         }
         return null;
-    }
+    }*/
 
     public String creatToken(User user){
         Date now = new Date();
