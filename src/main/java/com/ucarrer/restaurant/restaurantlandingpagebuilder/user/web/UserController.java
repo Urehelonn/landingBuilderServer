@@ -33,6 +33,10 @@ public class UserController {
     public ResponseEntity<String> login(@RequestBody User user) {
         //get token use method in service
         String loginToken = userService.login(user);
+        //TODO add 404 option instead of null
+        if(loginToken==null){
+           // return ResponseEntity.notFound();
+        }
         return ResponseEntity.ok(loginToken);
     }
 

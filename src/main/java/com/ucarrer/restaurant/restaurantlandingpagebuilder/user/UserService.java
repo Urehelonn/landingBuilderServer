@@ -55,7 +55,9 @@ public class UserService {
     }
 
     public String login(User user){
-        User loginUser = (User)repository.findByUsername(user.getUsername()).orElse(null);
+        User loginUser = (User)repository.findByUsernameAndPassword(user.getUsername(),
+                user.getPassword()).orElse(null);
+
         if(loginUser!=null){
             return createToken(loginUser);
         }
