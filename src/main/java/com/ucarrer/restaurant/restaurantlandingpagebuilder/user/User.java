@@ -20,6 +20,7 @@ import static javax.persistence.TemporalType.TIMESTAMP;
                 "username"
         })
 })
+
 public class User {
     //variables
     @Id
