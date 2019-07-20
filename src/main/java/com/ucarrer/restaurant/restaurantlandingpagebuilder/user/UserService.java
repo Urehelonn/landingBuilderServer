@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -17,8 +18,11 @@ import java.util.concurrent.TimeUnit;
 @Service("UserService")
 public class UserService {
 
+    BCryptPasswordEncoder encoder  = new BCryptPasswordEncoder();
+
     @Autowired
     UserRepository repository;
+
 
     @Value("${ucareer.jwt.expire-in-hour}")
     private Long expireHours;
@@ -44,22 +48,30 @@ public class UserService {
     }
 
     public User register(User user){
-        User newUser = new User();
+        User foundOne = repository.findByUsername(user.getUsername()).orElse(null);
+        if(foundOne == null){
+            // create new user
+            User newUser = new User();
+            newUser.setPassword(encoder.encode(user.getPassword()));
+            newUser.setUsername(user.getUsername());
+            newUser.setStatus(UserStatus.Inactive);
+            User savedUser = repository.save(newUser);
+            return savedUser;
+        }else{
+            return null;
+        }
 
-        newUser.setPassword(user.getPassword());
-        newUser.setUsername(user.getUsername());
-        newUser.setStatus(UserStatus.Inactive);
-
-        User savedUser = repository.save(newUser);
-        return savedUser;
     }
 
     public String login(User user){
-        User loginUser = (User)repository.findByUsernameAndPassword(user.getUsername(),
-                user.getPassword()).orElse(null);
-
+        User loginUser = (User)repository.findByUsername(user.getUsername()).orElse(null);
         if(loginUser!=null){
-            return createToken(loginUser);
+            boolean matched = encoder.matches(user.getPassword(),loginUser.getPassword());
+            if(matched){
+                return createToken(loginUser);
+            }else{
+                return null;
+            }
         }
         else{
             return null;
