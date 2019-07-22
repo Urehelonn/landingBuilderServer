@@ -5,6 +5,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -27,15 +29,16 @@ public class UserService {
     private String plainSecret;
 
     private String encodedSecret;
+    private PasswordEncoder encoder;
 
     @PostConstruct
     protected void init() {
         this.encodedSecret = generateEncodedSecret(this.plainSecret);
+        encoder = new BCryptPasswordEncoder();
     }
 
     private String generateEncodedSecret(String plainSecret) {
-        if (StringUtils.isEmpty(plainSecret))
-        {
+        if (StringUtils.isEmpty(plainSecret)) {
             throw new IllegalArgumentException("JWT secret cannot be null or empty.");
         }
         return Base64
@@ -43,30 +46,37 @@ public class UserService {
                 .encodeToString(this.plainSecret.getBytes());
     }
 
-    public User register(User user){
-        User newUser = new User();
+    public User register(User user) {
+        // avoid user id duplicate
+        User foundUser = repository.findByUsername(user.getUsername()).orElse(null);
 
-        newUser.setPassword(user.getPassword());
-        newUser.setUsername(user.getUsername());
-        newUser.setStatus(UserStatus.Inactive);
+        if (foundUser == null) {
+            //create new user
+            User newUser = new User();
+            newUser.setPassword(encoder.encode(user.getPassword()));
+            newUser.setUsername(user.getUsername());
+            newUser.setStatus(UserStatus.Inactive);
 
-        User savedUser = repository.save(newUser);
-        return savedUser;
-    }
-
-    public String login(User user){
-        User loginUser = (User)repository.findByUsernameAndPassword(user.getUsername(),
-                user.getPassword()).orElse(null);
-
-        if(loginUser!=null){
-            return createToken(loginUser);
-        }
-        else{
+            User savedUser = repository.save(newUser);
+            return savedUser;
+        } else {
             return null;
         }
     }
 
-    public String createToken(User user){
+    public String login(User user) {
+
+        User loginUser = (User) repository.findByUsername(user.getUsername()).orElse(null);
+
+        if (loginUser != null) {
+            return encoder.matches(user.getPassword(),loginUser.getPassword())?
+                    createToken(loginUser):null;
+        } else {
+            return null;
+        }
+    }
+
+    public String createToken(User user) {
         Date now = new Date();
         Long expireInMilis = TimeUnit.HOURS.toMillis(expireHours);
         Date expiredAt = new Date(expireInMilis + now.getTime());
