@@ -49,10 +49,10 @@ public class UserController {
         CoreResponseBody res;
 
         if (loginToken == null) {
-            res = new CoreResponseBody(user, "Username or password does not match with the record.", null);
+            res = new CoreResponseBody(null, "Username or password does not match with the record.", new Exception("Wrong password or username combination."));
 //            return ResponseEntity.notFound();
         } else {
-            res = new CoreResponseBody(user, "get user msg", null);
+            res = new CoreResponseBody(loginToken, "get user msg", null);
         }
         return ResponseEntity.ok(res);
     }
