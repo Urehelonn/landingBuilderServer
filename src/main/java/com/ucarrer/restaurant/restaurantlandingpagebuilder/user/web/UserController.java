@@ -39,6 +39,14 @@ public class UserController {
         }
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<CoreResponseBody> me(@RequestHeader("Authorization") String auth){
+
+
+
+        return null;
+    }
+
 
     //write login api, return token
     @PostMapping("/login")
