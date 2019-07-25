@@ -40,12 +40,45 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<CoreResponseBody> me(@RequestHeader("Authorization") String auth){
-
-
-
-        return null;
+    @CrossOrigin(origins = "http://localhost:4200")
+    public ResponseEntity<CoreResponseBody> me(@RequestHeader("Authorization") String authHeader){
+        String token = this.getJwtTokenFromHeader(authHeader);
+        CoreResponseBody response;
+        if(token.trim() == ""){
+            response = new CoreResponseBody(null, "invalid token", new Exception("invaild token"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+        User user = userService.getUserByToken(token);
+        if(user == null){
+            response = new CoreResponseBody(null, "invalid token", new Exception("invaild token"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+        response = new CoreResponseBody(user, "success", null);
+        return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/me")
+    @CrossOrigin(origins = "http://localhost:4200")
+    public ResponseEntity<CoreResponseBody> updateProfile(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestBody User user
+    ){
+        String token = this.getJwtTokenFromHeader(authHeader);
+        CoreResponseBody response;
+        if(token.trim() == ""){
+            response = new CoreResponseBody(null, "invalid token", new Exception("invaild token"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+        User foundUser = userService.getUserByToken(token);
+        if(foundUser == null){
+            response = new CoreResponseBody(null, "invalid token", new Exception("invaild token"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+        User updatedUser = userService.updateProfile(user, foundUser);
+        response = new CoreResponseBody(updatedUser, "success", null);
+        return ResponseEntity.ok(response);
+    }
+
 
 
     //write login api, return token
@@ -62,6 +95,10 @@ public class UserController {
             response = new CoreResponseBody(loginToken, "", null);
             return ResponseEntity.ok(response);
         }
+    }
+
+    private String getJwtTokenFromHeader(String authHeader){
+        return authHeader.replace("Bearer ","").trim();
     }
 
 }
