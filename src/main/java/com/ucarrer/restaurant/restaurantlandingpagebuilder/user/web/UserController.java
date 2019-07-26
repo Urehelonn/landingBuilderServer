@@ -56,4 +56,52 @@ public class UserController {
         }
     }
 
+    @GetMapping("/me")
+    @CrossOrigin(origins = "http://localhost:4200")
+    public ResponseEntity<CoreResponseBody> me(@RequestHeader("Authorization") String authHeader){
+        String token = this.getJwtTokenFromHeader(authHeader);
+        CoreResponseBody response;
+        if(token == ""){
+            response = new CoreResponseBody(null, "invalid token", new Exception("invalid token"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+
+        User user = userService.getUserByToken(token);
+        if(user == null){
+            response = new CoreResponseBody(null, "invalid token", new Exception("invalid token"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+        response = new CoreResponseBody(user, "", null);
+
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/me")
+    @CrossOrigin(origins = "http://localhost:4200")
+    public ResponseEntity<CoreResponseBody> me(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestBody User user
+    ){
+        String token = this.getJwtTokenFromHeader(authHeader);
+        CoreResponseBody response;
+        if(token == ""){
+            response = new CoreResponseBody(null, "invalid token", new Exception("invalid token"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+        User currentUser = userService.getUserByToken(token);
+        if(currentUser == null){
+            response = new CoreResponseBody(null, "invalid token", new Exception("invalid token"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+        User updatedUser = userService.updateProfile(user, currentUser);
+        response = new CoreResponseBody(updatedUser, "profile update completed", null);
+        return ResponseEntity.ok(response);
+    }
+
+    private String getJwtTokenFromHeader(String authHeader){
+        return authHeader.replace("Bearer ","").trim();
+    }
+
+
 }
