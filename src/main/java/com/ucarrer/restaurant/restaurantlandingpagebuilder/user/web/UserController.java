@@ -1,6 +1,7 @@
 package com.ucarrer.restaurant.restaurantlandingpagebuilder.user.web;
 
 import com.ucarrer.restaurant.restaurantlandingpagebuilder.core.responseBody.CoreResponseBody;
+import com.ucarrer.restaurant.restaurantlandingpagebuilder.mail.MailService;
 import com.ucarrer.restaurant.restaurantlandingpagebuilder.user.User;
 import com.ucarrer.restaurant.restaurantlandingpagebuilder.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,9 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    MailService mailService;
 
     //localhsot:8080/api/hello
     @GetMapping("/hello")
@@ -34,9 +38,37 @@ public class UserController {
             return ResponseEntity.ok(response);
 
         } else {
-            response = new CoreResponseBody(savedUser, "registered successfully", null);
-            return ResponseEntity.ok(response);
+            String token = userService.createToken(savedUser);
+            String body = String.format("please use this link to confirm your username, %s/api/user/confirm/%s", "http://localhost:8080", token);
+
+            try{
+                mailService.sendSimpleMessage(user.getUsername(), "Confirm your email", body);
+                response = new CoreResponseBody(savedUser, "please confirm your email", null);
+                return ResponseEntity.ok(response);
+            }
+            catch (Exception e){
+                response = new CoreResponseBody(null, "please confirm your email", e);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+
         }
+    }
+
+    @GetMapping("/user/confirm/{token}")
+    @CrossOrigin(origins = "http://localhost:4200")
+    public ResponseEntity<CoreResponseBody> confirmEmail(@PathVariable String token){
+        CoreResponseBody response;
+        if(token.trim() == ""){
+            response = new CoreResponseBody(null, "invalid token", new Exception("invalid token"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+        User foundOne = userService.confirmByToken(token);
+        if(foundOne == null){
+            response = new CoreResponseBody(null, "invalid token", new Exception("invalid token"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+        response = new CoreResponseBody(token, "", null);
+        return ResponseEntity.ok(response);
     }
 
 

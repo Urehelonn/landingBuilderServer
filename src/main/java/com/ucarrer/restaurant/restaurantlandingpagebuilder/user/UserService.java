@@ -130,4 +130,20 @@ public class UserService {
             return null;
         }
     }
+
+    public User confirmByToken(String token){
+        try {
+            User foundUser = this.getUserByToken(token);
+            if(foundUser == null){
+                return null;
+            }
+            else{
+                foundUser.setStatus(UserStatus.Active);
+                repository.save(foundUser);
+                return foundUser;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }
