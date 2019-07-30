@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="google-signin-client_id" content="721979615097-h5jsjcnrhh5k4c3n660bnned3lrnbfjv.apps.googleusercontent.com">
+</head>
+
+<body>
+<div class="g-signin2" data-onsuccess="onSignIn"></div>
+<a href="#" onclick="signOut();">Sign out</a>
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+<script>
+    function onSignIn(googleUser) {
+        var profile = googleUser.getBasicProfile();
+        let newUser = {
+            firstName : profile.getGivenName(),
+            lastName: profile.getFamilyName(),
+            username: profile.getEmail(),
+            googleId: profile.getId()
+        }
+        register(newUser);
+
+    }
+
+    function signOut() {
+        var auth2 = gapi.auth2.getAuthInstance();
+        auth2.signOut().then(function () {
+            console.log('User signed out.');
+        });
+    }
+    function register(newUser){
+        // fetch("http://localhost:8080/api/register", {
+        //     method: 'post',
+        //     mode: 'cors',
+        //     body: JSON.stringify(newUser),
+        //     headers : new Headers({
+        //         'Content-Type': 'application/json'
+        //     })
+        // }).then(response => response.json()).then(response => {
+        //     console.log(response);
+        // }).catch(e => {
+        //     console.error(e)
+        // })
+
+        // fetch("http://localhost:8080/api/loginByGoogle", {
+        //     method: 'post',
+        //     mode: 'cors',
+        //     body: JSON.stringify(newUser),
+        //     headers : new Headers({
+        //         'Content-Type': 'application/json'
+        //     })
+        // }).then(response => response.json()).then(response => {
+        //     console.log(response);
+        // }).catch(e => {
+        //     console.error(e)
+        // })
+
+        fetch("https://api.ipify.org?format=json")
+            .then(response => response.json())
+    .then(response =>{
+            console.log(response);
+    })
+    }
+</script>
+</body>
+
+</html>
