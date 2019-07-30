@@ -65,6 +65,7 @@ public class UserService {
                 newUser.setStatus(UserStatus.Inactive);
                 newUser.setFirstName(user.getFirstName());
                 newUser.setLastName(user.getLastName());
+                newUser.setGoogleId(user.getGoogleId());
                 User savedUser = repository.save(newUser);
                 return savedUser;
             }
@@ -91,6 +92,16 @@ public class UserService {
             }else{
                 return null;
             }
+        }
+        else{
+            return null;
+        }
+    }
+
+    public String loginByGoogle(User user){
+        User loginUser = (User)repository.findByGoogleId(user.getGoogleId()).orElse(null);
+        if(loginUser!=null){
+            return createToken(loginUser);
         }
         else{
             return null;

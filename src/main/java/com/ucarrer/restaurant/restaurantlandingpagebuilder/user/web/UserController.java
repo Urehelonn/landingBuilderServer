@@ -83,7 +83,22 @@ public class UserController {
         String loginToken = userService.login(user);
         CoreResponseBody response;
         if (loginToken == null) {
-            response = new CoreResponseBody(null, "user and password", null);
+            response = new CoreResponseBody(null, "invalid login", null);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }else{
+            response = new CoreResponseBody(loginToken, "", null);
+            return ResponseEntity.ok(response);
+        }
+    }
+
+    @PostMapping("/loginByGoogle")
+    @CrossOrigin(origins = "http://localhost:4200")
+    public ResponseEntity<CoreResponseBody> loginByGoogle(@RequestBody User user) {
+        //get token use method in service
+        String loginToken = userService.loginByGoogle(user);
+        CoreResponseBody response;
+        if (loginToken == null) {
+            response = new CoreResponseBody(null, "invalid login", null);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }else{
             response = new CoreResponseBody(loginToken, "", null);
