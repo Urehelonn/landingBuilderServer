@@ -7,9 +7,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
-/**
- * Created by Olga on 7/15/2016.
- */
+
 @Component
 public class MailService {
 
@@ -18,6 +16,7 @@ public class MailService {
 
     public void sendSimpleMessage(String to, String subject, String text) throws MailException{
         SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("noreply@ucareer.ca");
         message.setTo(to);
         message.setSubject(subject);
         message.setText(text);

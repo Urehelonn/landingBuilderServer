@@ -58,6 +58,20 @@ public class User {
 
     private String description;
 
+    @Column(name = "google_id", nullable = true)
+    private String googleId;
+
+    public String getGoogleId() {
+        return googleId;
+    }
+
+    public void setGoogleId(String googleId) {
+        this.googleId = googleId;
+    }
+
+
+
+
 
 
     //getters and setters

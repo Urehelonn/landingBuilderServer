@@ -54,6 +54,9 @@ public class UserController {
         }
     }
 
+
+
+
     @GetMapping("/user/confirm/{token}")
     @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<CoreResponseBody> confirmEmail(@PathVariable String token){

@@ -11,8 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
+import java.nio.charset.Charset;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -53,11 +55,27 @@ public class UserService {
         if(foundOne == null){
             // create new user
             User newUser = new User();
-            newUser.setPassword(encoder.encode(user.getPassword()));
-            newUser.setUsername(user.getUsername());
-            newUser.setStatus(UserStatus.Inactive);
-            User savedUser = repository.save(newUser);
-            return savedUser;
+            if(user.getGoogleId() != ""){
+                //3party login from google
+                byte[] array = new byte[12]; // length is bounded by 7
+                new Random().nextBytes(array);
+                String generatedString = new String(array, Charset.forName("UTF-8"));
+                newUser.setPassword(encoder.encode(generatedString));
+                newUser.setUsername(user.getUsername());
+                newUser.setStatus(UserStatus.Inactive);
+                newUser.setFirstName(user.getFirstName());
+                newUser.setLastName(user.getLastName());
+                User savedUser = repository.save(newUser);
+                return savedUser;
+            }
+            else{
+                //regular login
+                newUser.setPassword(encoder.encode(user.getPassword()));
+                newUser.setUsername(user.getUsername());
+                newUser.setStatus(UserStatus.Inactive);
+                User savedUser = repository.save(newUser);
+                return savedUser;
+            }
         }else{
             return null;
         }
