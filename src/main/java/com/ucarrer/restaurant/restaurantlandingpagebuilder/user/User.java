@@ -1,6 +1,8 @@
 package com.ucarrer.restaurant.restaurantlandingpagebuilder.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ucarrer.restaurant.restaurantlandingpagebuilder.builder.Builder;
 import com.ucarrer.restaurant.restaurantlandingpagebuilder.user.enums.UserStatus;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -61,6 +63,12 @@ public class User {
     @Column(name = "google_id", nullable = true)
     private String googleId;
 
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JsonIgnore
+    @JoinColumn(name = "builder_id", referencedColumnName = "id")
+    private Builder builder;
+
     public String getGoogleId() {
         return googleId;
     }
@@ -68,10 +76,6 @@ public class User {
     public void setGoogleId(String googleId) {
         this.googleId = googleId;
     }
-
-
-
-
 
 
     //getters and setters
@@ -161,5 +165,13 @@ public class User {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Builder getBuilder() {
+        return builder;
+    }
+
+    public void setBuilder(Builder builder) {
+        this.builder = builder;
     }
 }
