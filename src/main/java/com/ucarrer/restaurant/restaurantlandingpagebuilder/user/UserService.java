@@ -1,10 +1,12 @@
 package com.ucarrer.restaurant.restaurantlandingpagebuilder.user;
 
 import com.ucarrer.restaurant.restaurantlandingpagebuilder.user.enums.UserStatus;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -16,6 +18,9 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class UserService {
+
+    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
     @Autowired
     UserRepository repository;
 
@@ -45,16 +50,37 @@ public class UserService {
 
 
     public User register(User user) {
-        User newUser = new User();
-        newUser.setStatus(UserStatus.Inactive);
-        newUser.setUsername(user.getUsername());
-        newUser.setPassword(user.getPassword());
-        return repository.save(newUser);
+        // check the user already exists or not
+        Boolean userExists = repository.existsByUsername(user.getUsername());
+        if (userExists) {
+            return null;
+
+        } else {
+            //// if user not exist, create new user
+            User newUser = new User();
+            newUser.setPassword(encoder.encode(user.getPassword()));
+            newUser.setUsername(user.getUsername());
+            newUser.setStatus(UserStatus.Inactive);
+            User savedUser = repository.save(newUser);
+            return savedUser;
+        }
     }
 
     public User login(User user) {
-        User currentUser = repository.findByUsernameAndPassword(user.getUsername(), user.getPassword()).orElse(null);
-        return currentUser;
+        // find user
+        User currentUser = (User) repository.findByUsername(user.getUsername()).orElse(null);
+        if (currentUser != null) {
+            // check password
+            boolean matched = encoder.matches(user.getPassword(), currentUser.getPassword());
+            if (matched) {
+                return currentUser;
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+
 
     }
 
@@ -70,5 +96,44 @@ public class UserService {
                 .setExpiration(expiredAt)
                 .signWith(SignatureAlgorithm.HS512, encodedSecret)
                 .compact();
+    }
+
+    public User getUserByToken(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .setSigningKey(encodedSecret)
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            String username = claims.getSubject();
+            User user = repository.findByUsername(username).orElse(null);
+            return user;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public User updateProfile(User user, User currentUser) {
+        if (user.getFirstName() != null) {
+            currentUser.setFirstName(user.getFirstName());
+        }
+        if (user.getLastName() != null) {
+            currentUser.setLastName(user.getLastName());
+        }
+        if (user.getPhone() != null) {
+            currentUser.setPhone(user.getPhone());
+        }
+        if (user.getDescription() != null) {
+            currentUser.setDescription(user.getDescription());
+        }
+        if (user.getAddress() != null) {
+            currentUser.setAddress(user.getAddress());
+        }
+        if (user.getPassword() != null && user.getPassword().trim() != "") {
+            currentUser.setPassword(encoder.encode(user.getPassword()));
+        }
+
+        User updatedUser = repository.save(currentUser);
+        return updatedUser;
     }
 }
