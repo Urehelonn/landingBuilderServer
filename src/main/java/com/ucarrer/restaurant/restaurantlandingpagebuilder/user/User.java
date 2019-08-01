@@ -65,7 +65,6 @@ public class User {
 
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JsonIgnore
     @JoinColumn(name = "builder_id", referencedColumnName = "id")
     private Builder builder;
 

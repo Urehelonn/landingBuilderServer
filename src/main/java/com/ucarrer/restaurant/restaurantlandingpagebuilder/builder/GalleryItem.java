@@ -29,7 +29,7 @@ public class GalleryItem {
         this.gallery = gallery;
     }
 
-    @ManyToOne
+    @ManyToOne(cascade=CascadeType.ALL)
     @JsonIgnore
     @JoinColumn(name = "gallery_id", nullable = false)
     private Gallery gallery;
