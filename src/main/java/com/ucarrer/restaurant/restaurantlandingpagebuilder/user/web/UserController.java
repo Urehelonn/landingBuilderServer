@@ -1,10 +1,12 @@
 package com.ucarrer.restaurant.restaurantlandingpagebuilder.user.web;
 
 import com.ucarrer.restaurant.restaurantlandingpagebuilder.core.responseBody.CoreResponseBody;
+import com.ucarrer.restaurant.restaurantlandingpagebuilder.mail.MailService;
 import com.ucarrer.restaurant.restaurantlandingpagebuilder.user.User;
 import com.ucarrer.restaurant.restaurantlandingpagebuilder.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 
@@ -17,10 +19,20 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    MailService mailService;
+
 
     @GetMapping("/hello")
     public ResponseEntity<String> hello() {
         return ResponseEntity.ok("Hello World!");
+    }
+
+    @GetMapping("/user/confirm/{token}")
+    @CrossOrigin(origins = "http://localhost:4200")
+    public ResponseEntity<CoreResponseBody> confirmEmail(@PathVariable String token){
+        //todo set user status to active
+        return null;
     }
 
     @PostMapping("/register")
@@ -36,7 +48,18 @@ public class UserController {
             return ResponseEntity.ok(response);
 
         } else {
-            response = new CoreResponseBody(registerUser, "Registered successfully", null);
+            try{
+                String token = userService.creatToken(registerUser);
+                String body = String.format("please use this link to confirm your username, %s/api/user/confirm/%s", "http://localhost:8080", token);
+
+                mailService.sendSimpleMessage(registerUser.getUsername(), "Please confirm your email", body);
+            }
+            catch (MailException e){
+                response = new CoreResponseBody(null, "email send failed", e);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+
+            response = new CoreResponseBody(registerUser, "Please confirm your email then login", null);
             return ResponseEntity.ok(response);
         }
     }
@@ -45,6 +68,8 @@ public class UserController {
     @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<CoreResponseBody> login(@RequestBody User user) {
         User currentUser = userService.login(user);
+        //todo check user status to make sure user is active
+
         CoreResponseBody response;
         if (currentUser == null) {
             response = new CoreResponseBody(null, "Invalid Login. The username/email and password you entered did not match our records.", null);
@@ -55,8 +80,9 @@ public class UserController {
             return ResponseEntity.ok(response);
 
         }
-
     }
+
+
 
     @GetMapping("/me")
     @CrossOrigin(origins = "http://localhost:4200")
