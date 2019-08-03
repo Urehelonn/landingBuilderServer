@@ -19,6 +19,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compile("org.springframework.boot:spring-boot-devtools")
 	compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.7.0'
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.1.6.RELEASE'
 	runtimeOnly 'mysql:mysql-connector-java'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'

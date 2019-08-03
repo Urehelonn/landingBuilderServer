@@ -48,6 +48,13 @@ public class UserService {
                 .encodeToString(this.plainSecret.getBytes());
     }
 
+    public User confirmEmail(User user) {
+        user.setStatus(UserStatus.Active);
+        User savedUser = repository.save(user);
+        return savedUser;
+
+    }
+
 
     public User register(User user) {
         // check the user already exists or not
