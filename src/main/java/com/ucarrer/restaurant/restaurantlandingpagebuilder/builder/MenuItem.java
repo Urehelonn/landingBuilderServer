@@ -3,8 +3,8 @@ package com.ucarrer.restaurant.restaurantlandingpagebuilder.builder;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "items")
-public class Item {
+@Table(name = "menu_items")
+public class MenuItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,7 +21,8 @@ public class Item {
     @Column(columnDefinition = "varchar(255) default ''")
     private String price;
 
-    @OneToOne(mappedBy = "item")
+    @ManyToOne
+    @JoinColumn(name="menu_id")
     private Menu menu;
 
     public Long getId() {

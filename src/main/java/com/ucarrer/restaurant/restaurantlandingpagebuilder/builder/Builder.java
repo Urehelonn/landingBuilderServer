@@ -1,5 +1,6 @@
 package com.ucarrer.restaurant.restaurantlandingpagebuilder.builder;
 
+import com.ucarrer.restaurant.restaurantlandingpagebuilder.user.User;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;

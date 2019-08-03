@@ -3,8 +3,8 @@ package com.ucarrer.restaurant.restaurantlandingpagebuilder.builder;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.util.Date;
+import java.util.List;
 
 import static javax.persistence.TemporalType.TIMESTAMP;
 
@@ -29,9 +29,8 @@ public class Menu {
     @OneToOne(mappedBy = "menu")
     private Builder builder;
 
-    @OneToOne
-    @JoinColumn(name = "menu_id", referencedColumnName = "id")
-    private Item item;
+    @OneToMany(mappedBy = "menu")
+    private List<MenuItem> menuItems;
 
     public Long getId() {
         return id;
@@ -73,11 +72,11 @@ public class Menu {
         this.builder = builder;
     }
 
-    public Item getItem() {
-        return item;
+    public List<MenuItem> getMenuItems() {
+        return menuItems;
     }
 
-    public void setItem(Item item) {
-        this.item = item;
+    public void setMenuItems(List<MenuItem> menuItems) {
+        this.menuItems = menuItems;
     }
 }

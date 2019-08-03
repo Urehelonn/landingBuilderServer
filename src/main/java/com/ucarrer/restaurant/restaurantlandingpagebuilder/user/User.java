@@ -1,6 +1,7 @@
 package com.ucarrer.restaurant.restaurantlandingpagebuilder.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ucarrer.restaurant.restaurantlandingpagebuilder.builder.Builder;
 import com.ucarrer.restaurant.restaurantlandingpagebuilder.user.enums.UserStatus;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.NaturalId;
@@ -47,6 +48,11 @@ public class User {
     @Column(name = "modified_at", nullable = false, columnDefinition = "TIMESTAMP  default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP")
     @UpdateTimestamp
     private Date modifiedAt;
+
+
+    @OneToOne
+    @JoinColumn(name="builder_id")
+    private Builder builder;
 
     private String firstname;
     private String lastname;
@@ -142,5 +148,13 @@ public class User {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Builder getBuilder() {
+        return builder;
+    }
+
+    public void setBuilder(Builder builder) {
+        this.builder = builder;
     }
 }

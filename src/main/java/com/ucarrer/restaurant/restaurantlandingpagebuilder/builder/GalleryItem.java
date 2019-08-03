@@ -30,7 +30,8 @@ public class GalleryItem {
     @UpdateTimestamp
     private Date modifiedAt;
 
-    @OneToOne(mappedBy = "galleryItem")
+    @ManyToOne
+    @JoinColumn(name="gallery_id")
     private Gallery gallery;
 
     public Long getId() {

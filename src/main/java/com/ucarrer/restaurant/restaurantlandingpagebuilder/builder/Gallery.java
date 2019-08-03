@@ -5,6 +5,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
+import java.util.List;
 
 import static javax.persistence.TemporalType.TIMESTAMP;
 
@@ -27,9 +28,8 @@ public class Gallery {
     @UpdateTimestamp
     private Date modifiedAt;
 
-    @OneToOne
-    @JoinColumn(name = "galleryItem_id", referencedColumnName = "id")
-    private Menu galleryItem;
+    @OneToOne(mappedBy = "gallery")
+    private List<GalleryItem> galleryItem;
 
     @OneToOne(mappedBy = "gallery")
     private Builder builder;
@@ -66,11 +66,11 @@ public class Gallery {
         this.modifiedAt = modifiedAt;
     }
 
-    public Menu getGalleryItem() {
+    public List<GalleryItem> getGalleryItem() {
         return galleryItem;
     }
 
-    public void setGalleryItem(Menu galleryItem) {
+    public void setGalleryItem(List<GalleryItem> galleryItem) {
         this.galleryItem = galleryItem;
     }
 
