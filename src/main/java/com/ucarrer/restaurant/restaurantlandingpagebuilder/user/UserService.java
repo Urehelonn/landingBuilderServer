@@ -1,6 +1,7 @@
 package com.ucarrer.restaurant.restaurantlandingpagebuilder.user;
 
 import com.ucarrer.restaurant.restaurantlandingpagebuilder.user.enums.UserStatus;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,11 +70,23 @@ public class UserService {
         User loginUser = (User) repository.findByUsername(user.getUsername()).orElse(null);
 
         if (loginUser != null) {
-            return encoder.matches(user.getPassword(),loginUser.getPassword())?
-                    createToken(loginUser):null;
+            return encoder.matches(user.getPassword(), loginUser.getPassword()) ?
+                    createToken(loginUser) : null;
         } else {
             return null;
         }
+    }
+
+    public boolean setUserActive(User user){
+        User loginUser = (User) repository.findByUsername(user.getUsername()).orElse(null);
+
+        if (loginUser != null) {
+            if(encoder.matches(user.getPassword(), loginUser.getPassword())){
+                loginUser.setStatus(UserStatus.Active);
+                return true;
+            }
+        }
+        return false;
     }
 
     public String createToken(User user) {
@@ -88,5 +101,78 @@ public class UserService {
                 .setExpiration(expiredAt)
                 .signWith(SignatureAlgorithm.HS512, encodedSecret)
                 .compact();
+    }
+
+    public User getUserByToken(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .setSigningKey(encodedSecret)
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            String username = claims.getSubject();
+            User user = repository.findByUsername(username).orElse(null);
+            if (user != null) return user;
+
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
+    }
+
+    public User updateUser(User userInDb, User newUser) {
+
+        if (userInDb == null) return null;
+
+        if (newUser.getAddress() != null) {
+            userInDb.setAddress(newUser.getAddress());
+        }
+
+        if (newUser.getDescription() != null) {
+            userInDb.setDescription(newUser.getDescription());
+        }
+
+        if (newUser.getFirstname() != null) {
+            userInDb.setFirstname(newUser.getFirstname());
+        }
+
+        if (newUser.getLastname() != null) {
+            userInDb.setLastname(newUser.getLastname());
+        }
+
+        if (newUser.getPhone() != null) {
+            userInDb.setPhone(newUser.getPhone());
+        }
+
+        User savedUser = repository.save(userInDb);
+
+        return savedUser;
+    }
+
+    public User updateUserPassword(User userInDb, String oldPass, String newPass) {
+        if (userInDb == null) {
+            System.out.println("user null");
+            return null;
+        }
+        if (oldPass == null) {
+            System.out.println("old pass null");
+            return null;
+        }
+        if (newPass == null) {
+            System.out.println("new pass null");
+            return null;
+        }
+
+        if (!encoder.matches(oldPass, userInDb.getPassword())) {
+            System.out.println(userInDb.getUsername());
+            System.out.println("unmatch password checked from service");
+            return null;
+        }
+
+        User savedUser;
+        userInDb.setPassword(encoder.encode(newPass));
+        savedUser = repository.save(userInDb);
+
+        return savedUser;
     }
 }
