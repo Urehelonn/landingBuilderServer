@@ -49,7 +49,6 @@ public class User {
     @UpdateTimestamp
     private Date modifiedAt;
 
-
     @OneToOne
     @JoinColumn(name="builder_id")
     private Builder builder;

@@ -44,6 +44,8 @@ public class Builder {
     @JoinColumn(name = "menu_id", referencedColumnName = "id")
     private Menu menu;
 
+    @OneToOne(mappedBy = "builder")
+    private User user;
 
 
     public Long getId() {
@@ -102,5 +104,11 @@ public class Builder {
         this.menu = menu;
     }
 
+    public User getUser() {
+        return user;
+    }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

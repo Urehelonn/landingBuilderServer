@@ -28,7 +28,7 @@ public class Gallery {
     @UpdateTimestamp
     private Date modifiedAt;
 
-    @OneToOne(mappedBy = "gallery")
+    @OneToMany(mappedBy = "gallery")
     private List<GalleryItem> galleryItem;
 
     @OneToOne(mappedBy = "gallery")

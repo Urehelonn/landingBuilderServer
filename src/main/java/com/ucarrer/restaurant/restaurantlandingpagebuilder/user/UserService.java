@@ -83,6 +83,7 @@ public class UserService {
         if (loginUser != null) {
             if(encoder.matches(user.getPassword(), loginUser.getPassword())){
                 loginUser.setStatus(UserStatus.Active);
+                repository.save(loginUser);
                 return true;
             }
         }

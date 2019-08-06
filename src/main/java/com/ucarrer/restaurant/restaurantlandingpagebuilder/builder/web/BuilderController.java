@@ -1,6 +1,8 @@
 package com.ucarrer.restaurant.restaurantlandingpagebuilder.builder.web;
 
 
+import com.ucarrer.restaurant.restaurantlandingpagebuilder.builder.Builder;
+import com.ucarrer.restaurant.restaurantlandingpagebuilder.builder.BuilderService;
 import com.ucarrer.restaurant.restaurantlandingpagebuilder.core.responseBody.CoreResponseBody;
 import com.ucarrer.restaurant.restaurantlandingpagebuilder.user.User;
 import com.ucarrer.restaurant.restaurantlandingpagebuilder.user.UserService;
@@ -16,7 +18,10 @@ public class BuilderController {
     @Autowired
     UserService userService;
 
-    @GetMapping("/me/builder")
+    @Autowired
+    BuilderService builderService;
+
+    @GetMapping("/me/build")
     @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<CoreResponseBody> mineBuilder(@RequestHeader("Authorization") String authHeader) {
         String token = this.getJwtTokenFromHeader(authHeader);
@@ -27,18 +32,58 @@ public class BuilderController {
         }
 
         User user = userService.getUserByToken(token);
-        //todo: way 1: builderService => getBuilderByUser
-        //    todo: create builderRepository => findBuilderByUser Builder obj
-
-        // todo: modified
         if (user == null) {
             res = new CoreResponseBody(null, "invalid token", new Exception("invalid token"));
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
         }
-        res = new CoreResponseBody(user, "get user by username", null);
+        Builder builder = builderService.getBuilderByUser(user);
+        // re-structure on builder data
+
+        res = new CoreResponseBody(builder, "return builder data.", null);
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 
+    @PostMapping("/me/build")
+    @CrossOrigin(origins = "http://localhost:4200")
+    public ResponseEntity<CoreResponseBody> editBuilder(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestBody Builder builder
+    ) {
+        String token = this.getJwtTokenFromHeader(authHeader);
+        CoreResponseBody res;
+        if (token == "") {
+            res = new CoreResponseBody(null, "invalid token", new Exception("invalid token"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
+        }
+
+        User user = userService.getUserByToken(token);
+        if (user == null) {
+            res = new CoreResponseBody(null, "invalid token", new Exception("invalid token"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
+        }
+        Builder builderInDb = builderService.getBuilderByUser(user);
+        Builder builderRes = builderService.updateBuilder(builderInDb, builder);
+        if (builderRes != null) {
+            res = new CoreResponseBody(builderRes, "Builder updated.", null);
+            return ResponseEntity.status(HttpStatus.OK).body(res);
+        }
+        res = new CoreResponseBody(null, "Builder input invalid", new Exception("Invalid Builder Input"));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
+
+
+    @GetMapping("/build")
+    @CrossOrigin(origins = "http://localhost:4200")
+    public ResponseEntity<CoreResponseBody> getBuilder(@RequestBody Long id) {
+        CoreResponseBody res;
+        Builder builder = builderService.getBuilderById(id);
+        if (builder == null) {
+            res = new CoreResponseBody(null, "No corresponding builder found.", new Exception("No Builder Found"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+        }
+        res = new CoreResponseBody(builder, "Get builder data.", null);
+        return  ResponseEntity.status(HttpStatus.OK).body(res);
+    }
 
     private String getJwtTokenFromHeader(String authHeader) {
         return authHeader.replace("Bearer ", "").trim();
