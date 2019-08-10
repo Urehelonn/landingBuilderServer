@@ -39,7 +39,7 @@ public class User {
     private UserStatus status;
 
     @Temporal(TIMESTAMP)
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at",  nullable = false)
     @CreatedDate
     @CreationTimestamp
     private Date createdAt;
@@ -156,4 +156,6 @@ public class User {
     public void setBuilder(Builder builder) {
         this.builder = builder;
     }
+
+
 }

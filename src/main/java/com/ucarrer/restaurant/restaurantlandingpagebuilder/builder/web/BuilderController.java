@@ -67,8 +67,8 @@ public class BuilderController {
             res = new CoreResponseBody(null, "invalid token", new Exception("invalid token"));
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
         }
-        Builder builderInDb = builderService.getBuilderByUser(user);
-        Builder builderRes = builderService.updateBuilder(builderInDb, builder);
+
+        Builder builderRes = builderService.save(builder, user);
         if (builderRes != null) {
             res = new CoreResponseBody(builderRes, "Builder updated.", null);
             return ResponseEntity.status(HttpStatus.OK).body(res);

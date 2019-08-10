@@ -1,5 +1,7 @@
 package com.ucarrer.restaurant.restaurantlandingpagebuilder.builder;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -21,8 +23,10 @@ public class MenuItem {
     @Column(columnDefinition = "varchar(255) default ''")
     private String price;
 
-    @ManyToOne
-    @JoinColumn(name="menu_id")
+
+    @ManyToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "menu_id")
+    @JsonIgnore
     private Menu menu;
 
     public Long getId() {

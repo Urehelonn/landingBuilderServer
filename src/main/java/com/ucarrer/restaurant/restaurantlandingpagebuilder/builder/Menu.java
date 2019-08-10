@@ -31,7 +31,7 @@ public class Menu {
     @JsonIgnore
     private Builder builder;
 
-    @OneToMany(mappedBy = "menu")
+    @OneToMany(mappedBy = "menu", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<MenuItem> menuItems;
 
     public Long getId() {

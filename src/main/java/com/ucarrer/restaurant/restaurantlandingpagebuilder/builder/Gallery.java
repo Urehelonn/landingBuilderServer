@@ -29,10 +29,14 @@ public class Gallery {
     @UpdateTimestamp
     private Date modifiedAt;
 
-    @OneToMany(mappedBy = "gallery")
+    @OneToMany(mappedBy = "gallery", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<GalleryItem> galleryItem;
 
-    @OneToOne(mappedBy = "gallery")
+    @OneToOne(
+            mappedBy = "gallery",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     @JsonIgnore
     private Builder builder;
 

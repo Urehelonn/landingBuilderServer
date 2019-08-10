@@ -1,5 +1,4 @@
 package com.ucarrer.restaurant.restaurantlandingpagebuilder.builder;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ucarrer.restaurant.restaurantlandingpagebuilder.user.User;
 import org.hibernate.annotations.CreationTimestamp;
@@ -23,7 +22,7 @@ public class Builder {
     private String name;
 
     @Temporal(TIMESTAMP)
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at",  nullable = false)
     @CreatedDate
     @CreationTimestamp
     private Date createdAt;
@@ -33,22 +32,21 @@ public class Builder {
     @UpdateTimestamp
     private Date modifiedAt;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "head_id", referencedColumnName = "id")
     private Head head;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "gallery_id", referencedColumnName = "id")
     private Gallery gallery;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "menu_id", referencedColumnName = "id")
     private Menu menu;
 
     @OneToOne(mappedBy = "builder")
     @JsonIgnore
     private User user;
-
 
     public Long getId() {
         return id;

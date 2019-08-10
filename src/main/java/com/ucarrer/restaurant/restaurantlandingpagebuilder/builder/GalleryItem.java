@@ -1,6 +1,7 @@
 package com.ucarrer.restaurant.restaurantlandingpagebuilder.builder;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -30,8 +31,9 @@ public class GalleryItem {
     @UpdateTimestamp
     private Date modifiedAt;
 
-    @ManyToOne
-    @JoinColumn(name="gallery_id")
+    @ManyToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "gallery_id", referencedColumnName = "id")
+    @JsonIgnore
     private Gallery gallery;
 
     public Long getId() {
