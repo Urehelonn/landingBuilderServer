@@ -36,8 +36,14 @@ public class BuilderController {
             res = new CoreResponseBody(null, "invalid token", new Exception("invalid token"));
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
         }
+        System.out.println("user found: "+user.getUsername());
         Builder builder = builderService.getBuilderByUser(user);
         // re-structure on builder data
+
+        if(builder==null){
+            res = new CoreResponseBody(null, "corresponding builder not found", new Exception("Not Found"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+        }
 
         res = new CoreResponseBody(builder, "return builder data.", null);
         return ResponseEntity.status(HttpStatus.OK).body(res);

@@ -10,7 +10,7 @@ public class BuilderService {
     BuilderRepository repository;
 
     public Builder getBuilderByUser(User user){
-        Builder builder = repository.findByUser(user.getId()).orElse(null);
+        Builder builder = repository.findByUser(user).orElse(null);
         return builder;
     }
 

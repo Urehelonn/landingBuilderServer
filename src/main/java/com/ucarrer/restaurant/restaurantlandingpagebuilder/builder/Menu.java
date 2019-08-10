@@ -1,5 +1,6 @@
 package com.ucarrer.restaurant.restaurantlandingpagebuilder.builder;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -27,6 +28,7 @@ public class Menu {
     private Date modifiedAt;
 
     @OneToOne(mappedBy = "menu")
+    @JsonIgnore
     private Builder builder;
 
     @OneToMany(mappedBy = "menu")

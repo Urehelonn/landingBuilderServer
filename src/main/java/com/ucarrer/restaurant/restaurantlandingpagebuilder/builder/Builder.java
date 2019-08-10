@@ -1,5 +1,6 @@
 package com.ucarrer.restaurant.restaurantlandingpagebuilder.builder;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ucarrer.restaurant.restaurantlandingpagebuilder.user.User;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -45,6 +46,7 @@ public class Builder {
     private Menu menu;
 
     @OneToOne(mappedBy = "builder")
+    @JsonIgnore
     private User user;
 
 

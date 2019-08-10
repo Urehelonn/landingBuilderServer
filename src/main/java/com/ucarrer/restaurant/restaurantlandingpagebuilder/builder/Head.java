@@ -1,5 +1,6 @@
 package com.ucarrer.restaurant.restaurantlandingpagebuilder.builder;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
@@ -30,6 +31,7 @@ public class Head {
     private Date modifiedAt;
 
     @OneToOne(mappedBy = "head")
+    @JsonIgnore
     private Builder builder;
 
     public Long getId() {

@@ -1,5 +1,6 @@
 package com.ucarrer.restaurant.restaurantlandingpagebuilder.builder;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -32,6 +33,7 @@ public class Gallery {
     private List<GalleryItem> galleryItem;
 
     @OneToOne(mappedBy = "gallery")
+    @JsonIgnore
     private Builder builder;
 
     public Long getId() {

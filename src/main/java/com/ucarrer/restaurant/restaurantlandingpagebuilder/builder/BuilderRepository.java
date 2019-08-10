@@ -8,6 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface BuilderRepository extends JpaRepository<Builder, Long> {
-    Optional<Builder> findByUser(long user_id);
+    Optional<Builder> findByUser(User user);
     Optional<Builder> findById(long id);
 }
