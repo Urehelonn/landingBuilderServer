@@ -11,7 +11,7 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 
 @Entity
 @Table(name = "galleyItems")
-public class GalleryItem {
+public class GalleryItems {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

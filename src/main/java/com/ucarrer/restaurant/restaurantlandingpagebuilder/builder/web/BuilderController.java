@@ -78,17 +78,18 @@ public class BuilderController {
     }
 
 
-    @GetMapping("/build")
+    @GetMapping("/build/{id}")
     @CrossOrigin(origins = "http://localhost:4200")
-    public ResponseEntity<CoreResponseBody> getBuilder(@RequestBody Long id) {
+    public ResponseEntity<CoreResponseBody> getBuilder(@PathVariable Long id) {
         CoreResponseBody res;
         Builder builder = builderService.getBuilderById(id);
         if (builder == null) {
             res = new CoreResponseBody(null, "No corresponding builder found.", new Exception("No Builder Found"));
+            System.out.println("No builder with id " + id + " found.");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
         }
         res = new CoreResponseBody(builder, "Get builder data.", null);
-        return  ResponseEntity.status(HttpStatus.OK).body(res);
+        return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 
     private String getJwtTokenFromHeader(String authHeader) {

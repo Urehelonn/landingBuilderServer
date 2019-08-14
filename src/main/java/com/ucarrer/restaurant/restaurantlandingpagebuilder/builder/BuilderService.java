@@ -42,13 +42,13 @@ public class BuilderService {
             gallery.setDescription(builder.getGallery().getDescription());
             gallery.setBuilder(b);
 
-            if(builder.getGallery().getGalleryItem().size() > 0) {
-                List<GalleryItem> galleryItemList = new ArrayList<GalleryItem>();
-                for (GalleryItem item : builder.getGallery().getGalleryItem()) {
+            if(builder.getGallery().getGalleryItems().size() > 0) {
+                List<GalleryItems> galleryItemsList = new ArrayList<GalleryItems>();
+                for (GalleryItems item : builder.getGallery().getGalleryItems()) {
                     item.setGallery(gallery);
-                    galleryItemList.add(item);
+                    galleryItemsList.add(item);
                 }
-                gallery.setGalleryItem(galleryItemList);
+                gallery.setGalleryItems(galleryItemsList);
             }
             b.setGallery(gallery);
 
@@ -78,14 +78,14 @@ public class BuilderService {
             gallery.setTitle(builder.getHead().getTitle());
             gallery.setDescription(builder.getHead().getDescription());
 
-            List<GalleryItem> galleryItemList = new ArrayList<GalleryItem>();
-            if (builder.getGallery().getGalleryItem().size() > 0) {
-                b.getGallery().getGalleryItem().clear();
-                for (GalleryItem item : builder.getGallery().getGalleryItem()) {
+            List<GalleryItems> galleryItemsList = new ArrayList<GalleryItems>();
+            if (builder.getGallery().getGalleryItems().size() > 0) {
+                b.getGallery().getGalleryItems().clear();
+                for (GalleryItems item : builder.getGallery().getGalleryItems()) {
                     item.setGallery(gallery);
-                    galleryItemList.add(item);
+                    galleryItemsList.add(item);
                 }
-                gallery.setGalleryItem(galleryItemList);
+                gallery.setGalleryItems(galleryItemsList);
             }
             b.setGallery(gallery);
 

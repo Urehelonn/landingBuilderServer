@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.util.Date;
 import java.util.List;
 
@@ -30,7 +29,7 @@ public class Gallery {
     private Date modifiedAt;
 
     @OneToMany(mappedBy = "gallery", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<GalleryItem> galleryItem;
+    private List<GalleryItems> galleryItems;
 
     @OneToOne(
             mappedBy = "gallery",
@@ -72,12 +71,12 @@ public class Gallery {
         this.modifiedAt = modifiedAt;
     }
 
-    public List<GalleryItem> getGalleryItem() {
-        return galleryItem;
+    public List<GalleryItems> getGalleryItems() {
+        return galleryItems;
     }
 
-    public void setGalleryItem(List<GalleryItem> galleryItem) {
-        this.galleryItem = galleryItem;
+    public void setGalleryItems(List<GalleryItems> galleryItems) {
+        this.galleryItems = galleryItems;
     }
 
     public Builder getBuilder() {
