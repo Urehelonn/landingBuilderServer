@@ -22,11 +22,26 @@ public class UserController {
     @Autowired
     MailService mailService;
 
-    //localhsot:8080/api/hello
-    @GetMapping("/hello")
+    //localhsot:8080/api/builderid
+    @GetMapping("/builderid")
     @CrossOrigin("http://localhost:4200")
-    public ResponseEntity<String> hello() {
-        return ResponseEntity.ok("hello world");
+    public ResponseEntity<CoreResponseBody> getBuilderId(
+            @RequestHeader("Authorization") String authHeader) {
+        String token = this.getJwtTokenFromHeader(authHeader);
+        CoreResponseBody res;
+        if (token == "") {
+            res = new CoreResponseBody(null, "invalid token", new Exception("invalid token"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
+        }
+
+        User currUser = userService.getUserByToken(token);
+        if (currUser == null) {
+            res = new CoreResponseBody(null, "invalid token", new Exception("invalid token"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
+        }
+        Long builderId = currUser.getBuilder().getId();
+        res =new CoreResponseBody(builderId, "get builder id succeed", null);
+        return ResponseEntity.ok(res);
     }
 
     //localhsot:8080/api/register
@@ -39,15 +54,14 @@ public class UserController {
         if (savedUser == null) {
             res = new CoreResponseBody(savedUser, "User already exist.", new Exception("User Already Exist."));
         } else {
-            try{
+            try {
                 String token = userService.createToken(savedUser);
                 String body = String.format(
                         "please click following link to confirm your username. <a href=\"%s/api/user/confirm/%s\">Email Confirmed</a>",
                         "http://localhost:8080", token);
 //                String to, String subject, String text
-                this.mailService.sendSimpleMessage(savedUser.getUsername(),"Please confirm your email!", body);
-            }
-            catch(MailException e){
+                this.mailService.sendSimpleMessage(savedUser.getUsername(), "Please confirm your email!", body);
+            } catch (MailException e) {
                 res = new CoreResponseBody(null, "email send failed", e);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
             }
@@ -58,18 +72,18 @@ public class UserController {
 
     @GetMapping("/email-confirm")
     @CrossOrigin(origins = "http://localhsot:4200")
-    public ResponseEntity<CoreResponseBody> confirmMail(@PathVariable String token){
+    public ResponseEntity<CoreResponseBody> confirmMail(@PathVariable String token) {
         // validate token to see if it matches with a user who's currently inactive
         User user = this.userService.getUserByToken(token);
 
         // after validate succeed change user active state and stores in db (call service)
-        if(user!=null){
-            if(this.userService.setUserActive(user)){
+        if (user != null) {
+            if (this.userService.setUserActive(user)) {
                 CoreResponseBody res = new CoreResponseBody(user, "User set active.", null);
                 return ResponseEntity.ok(res);
             }
         }
-        return ResponseEntity.ok(new CoreResponseBody(null,"Token invalid.",new Exception("Invalid Token")));
+        return ResponseEntity.ok(new CoreResponseBody(null, "Token invalid.", new Exception("Invalid Token")));
     }
 
     //write login api, return token
@@ -80,8 +94,8 @@ public class UserController {
         CoreResponseBody res;
 
         // ensure that user is active, if not return false
-        if(user.getStatus()== UserStatus.Inactive){
-            res =  new CoreResponseBody(null, "User activation needs", new Exception("Activation needed"));
+        if (user.getStatus() == UserStatus.Inactive) {
+            res = new CoreResponseBody(null, "User activation needs", new Exception("Activation needed"));
             return ResponseEntity.ok(res);
         }
 
@@ -169,10 +183,9 @@ public class UserController {
         }
 
         User savedUser = userService.updateUserPassword(user, password.getCurrentPassword(), password.getNewPassword());
-        if(savedUser!=null){
+        if (savedUser != null) {
             res = new CoreResponseBody(savedUser, "Password changed", null);
-        }
-        else{
+        } else {
             res = new CoreResponseBody(null, "Current password is invalid, password change failed.", new Exception("Current password is invalid, password change failed."));
         }
         return ResponseEntity.status(HttpStatus.OK).body(res);
