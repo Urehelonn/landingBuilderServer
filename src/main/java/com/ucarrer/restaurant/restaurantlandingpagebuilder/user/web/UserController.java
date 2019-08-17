@@ -70,12 +70,11 @@ public class UserController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/email-confirm")
+    @GetMapping("/user/confirm/{token}")
     @CrossOrigin(origins = "http://localhsot:4200")
     public ResponseEntity<CoreResponseBody> confirmMail(@PathVariable String token) {
         // validate token to see if it matches with a user who's currently inactive
         User user = this.userService.getUserByToken(token);
-
         // after validate succeed change user active state and stores in db (call service)
         if (user != null) {
             if (this.userService.setUserActive(user)) {
@@ -93,19 +92,22 @@ public class UserController {
     public ResponseEntity<CoreResponseBody> login(@RequestBody User user) {
         CoreResponseBody res;
 
-        // ensure that user is active, if not return false
-        if (user.getStatus() == UserStatus.Inactive) {
-            res = new CoreResponseBody(null, "User activation needs", new Exception("Activation needed"));
-            return ResponseEntity.ok(res);
-        }
-
         //get token use method in service
         String loginToken = userService.login(user);
         if (loginToken == null) {
             res = new CoreResponseBody(null, "Username or password does not match with the record.", new Exception("Wrong password or username combination."));
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+            return ResponseEntity.ok(res);
         } else {
-            res = new CoreResponseBody(loginToken, "get user msg", null);
+            User luser = userService.getUserByToken(loginToken);
+            // ensure that user is active, if not return false
+            System.out.println(luser.getStatus());
+            System.out.println(UserStatus.Active);
+            System.out.println(luser.getStatus()==UserStatus.Active);
+            if (luser.getStatus()==UserStatus.Active)
+                res = new CoreResponseBody(loginToken, "get user msg", null);
+            else{
+                res =  new CoreResponseBody(null, "user is not active", new Exception("not active"));
+            }
         }
         return ResponseEntity.ok(res);
     }
