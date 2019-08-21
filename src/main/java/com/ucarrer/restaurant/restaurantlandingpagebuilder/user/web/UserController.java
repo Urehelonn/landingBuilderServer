@@ -36,11 +36,11 @@ public class UserController {
 
         User currUser = userService.getUserByToken(token);
         if (currUser == null) {
-            res = new CoreResponseBody(null, "invalid token", new Exception("invalid token"));
+            res = new CoreResponseBody(null, "Invalid token found.", new Exception("invalid token"));
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
         }
         Long builderId = currUser.getBuilder().getId();
-        res =new CoreResponseBody(builderId, "get builder id succeed", null);
+        res = new CoreResponseBody(builderId, "Get builder Id succeed", null);
         return ResponseEntity.ok(res);
     }
 
@@ -52,7 +52,7 @@ public class UserController {
         User savedUser = userService.register(user);
         CoreResponseBody res;
         if (savedUser == null) {
-            res = new CoreResponseBody(savedUser, "User already exist.", new Exception("User Already Exist."));
+            res = new CoreResponseBody(savedUser, "Sorry, user with email is already exist.", new Exception("User Already Exist."));
         } else {
             try {
                 String token = userService.createToken(savedUser);
@@ -78,11 +78,12 @@ public class UserController {
         // after validate succeed change user active state and stores in db (call service)
         if (user != null) {
             if (this.userService.setUserActive(user)) {
-                CoreResponseBody res = new CoreResponseBody(user, "User set active.", null);
+                CoreResponseBody res = new CoreResponseBody(user, "User set status to active.", null);
                 return ResponseEntity.ok(res);
             }
         }
-        return ResponseEntity.ok(new CoreResponseBody(null, "Token invalid.", new Exception("Invalid Token")));
+        CoreResponseBody res = new CoreResponseBody(null, "Token invalid.", new Exception("Invalid Token"));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
     }
 
     //write login api, return token
@@ -96,20 +97,20 @@ public class UserController {
         String loginToken = userService.login(user);
         if (loginToken == null) {
             res = new CoreResponseBody(null, "Username or password does not match with the record.", new Exception("Wrong password or username combination."));
-            return ResponseEntity.ok(res);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
         } else {
             User luser = userService.getUserByToken(loginToken);
             // ensure that user is active, if not return false
-            System.out.println(luser.getStatus());
-            System.out.println(UserStatus.Active);
-            System.out.println(luser.getStatus()==UserStatus.Active);
-            if (luser.getStatus()==UserStatus.Active)
-                res = new CoreResponseBody(loginToken, "get user msg", null);
-            else{
-                res =  new CoreResponseBody(null, "user is not active", new Exception("not active"));
+//            System.out.println(luser.getStatus());
+//            System.out.println(UserStatus.Active);
+//            System.out.println(luser.getStatus() == UserStatus.Active);
+            if (luser.getStatus() == UserStatus.Active) {
+                res = new CoreResponseBody(loginToken, "Login succeed.", null);
+                return ResponseEntity.ok(res);
             }
+            res = new CoreResponseBody(null, "Please active your account by confirming with your email.", new Exception("not active"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
         }
-        return ResponseEntity.ok(res);
     }
 
     // go to profile page
@@ -117,19 +118,17 @@ public class UserController {
     @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<CoreResponseBody> me(@RequestHeader("Authorization") String authHeader) {
         String token = this.getJwtTokenFromHeader(authHeader);
-        CoreResponseBody res;
+        CoreResponseBody res = new CoreResponseBody(null, "Need login to access current page.", new Exception("invalid token"));
         if (token == "") {
-            res = new CoreResponseBody(null, "invalid token", new Exception("invalid token"));
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
         }
 
         User user = userService.getUserByToken(token);
 
         if (user == null) {
-            res = new CoreResponseBody(null, "invalid token", new Exception("invalid token"));
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
         }
-        res = new CoreResponseBody(user, "get user by username", null);
+        res = new CoreResponseBody(user, "Login succeed and get user profile.", null);
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 
@@ -141,26 +140,25 @@ public class UserController {
             @RequestBody User user
     ) {
         String token = this.getJwtTokenFromHeader(authHeader);
-        CoreResponseBody res;
+        CoreResponseBody res = new CoreResponseBody(null, "Need login to access current page.", new Exception("invalid token"));
+
         if (token == "") {
-            res = new CoreResponseBody(null, "invalid token", new Exception("invalid token"));
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
         }
 
         User currUser = userService.getUserByToken(token);
         if (user == null) {
-            res = new CoreResponseBody(null, "invalid token", new Exception("invalid token"));
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
         }
 
         User savedUser = userService.updateUser(currUser, user);
         if (savedUser != null) {
-            res = new CoreResponseBody(savedUser, "user profile updated", null);
+            res = new CoreResponseBody(savedUser, "User profile updated.", null);
             return ResponseEntity.status(HttpStatus.OK).body(res);
         }
 
-        res = new CoreResponseBody(null, "invalid user information", new Exception("invalid user information"));
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
+        res = new CoreResponseBody(null, "Invalid user information provided, please check the form again.", new Exception("invalid user information"));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 
     @PostMapping("/passchange")
@@ -169,7 +167,7 @@ public class UserController {
             @RequestHeader("Authorization") String authHeader,
             @RequestBody PasswordCombination password) {
         String token = this.getJwtTokenFromHeader(authHeader);
-        CoreResponseBody res = new CoreResponseBody(null, "invalid token", new Exception("invalid token"));
+        CoreResponseBody res = new CoreResponseBody(null, "Login needed to access current page.", new Exception("invalid token"));
         if (token == "") {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
         }
@@ -181,16 +179,16 @@ public class UserController {
 
         if (password == null) {
             res = new CoreResponseBody(null, "Eempty password", new Exception("No pasword given."));
-            return ResponseEntity.status(HttpStatus.OK).body(res);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
         }
 
         User savedUser = userService.updateUserPassword(user, password.getCurrentPassword(), password.getNewPassword());
         if (savedUser != null) {
             res = new CoreResponseBody(savedUser, "Password changed", null);
-        } else {
-            res = new CoreResponseBody(null, "Current password is invalid, password change failed.", new Exception("Current password is invalid, password change failed."));
+            return ResponseEntity.status(HttpStatus.OK).body(res);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(res);
+        res = new CoreResponseBody(null, "Current password does not match with the record, password change failed.", new Exception("Current password is invalid, password change failed."));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
     }
 
     private String getJwtTokenFromHeader(String authHeader) {

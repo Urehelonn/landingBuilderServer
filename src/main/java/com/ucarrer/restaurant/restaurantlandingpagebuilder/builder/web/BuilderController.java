@@ -80,11 +80,11 @@ public class BuilderController {
 
     @GetMapping("/build/{id}")
     @CrossOrigin(origins = "http://localhost:4200")
-    public ResponseEntity<CoreResponseBody> getBuilder(@PathVariable Long id) {
+    public ResponseEntity<CoreResponseBody> getBuilderById(@PathVariable Long id) {
         CoreResponseBody res;
         Builder builder = builderService.getBuilderById(id);
         if (builder == null) {
-            res = new CoreResponseBody(null, "No corresponding builder found.", new Exception("No Builder Found"));
+            res = new CoreResponseBody(null, "No corresponding builder found with this id.", new Exception("No Builder Found"));
             System.out.println("No builder with id " + id + " found.");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
         }

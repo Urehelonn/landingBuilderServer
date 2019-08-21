@@ -26,7 +26,6 @@ public class BuilderService {
 
     public Builder save(Builder builder, User user) {
         Builder b = user.getBuilder();
-        System.out.println(user.getUsername());
         if (b == null) {
             b = new Builder();
             b.setName(builder.getName());
@@ -75,8 +74,10 @@ public class BuilderService {
             b.setHead(head);
 
             Gallery gallery = b.getGallery();
-            gallery.setTitle(builder.getHead().getTitle());
-            gallery.setDescription(builder.getHead().getDescription());
+            gallery.setTitle(builder.getGallery().getTitle());
+            gallery.setDescription(builder.getGallery().getDescription());
+            gallery.setImgUrl(builder.getGallery().getImgUrl());
+            b.setGallery(gallery);
 
             List<GalleryItems> galleryItemsList = new ArrayList<GalleryItems>();
             if (builder.getGallery().getGalleryItems().size() > 0) {
@@ -85,13 +86,14 @@ public class BuilderService {
                     item.setGallery(gallery);
                     galleryItemsList.add(item);
                 }
-                gallery.setGalleryItems(galleryItemsList);
+                gallery.getGalleryItems().addAll(galleryItemsList);
             }
             b.setGallery(gallery);
 
             Menu menu = b.getMenu();
             menu.setTitle(builder.getMenu().getTitle());
             menu.setDescription(builder.getMenu().getDescription());
+
             List<MenuItem> menuItemList = new ArrayList<MenuItem>();
             if (builder.getMenu().getMenuItems().size() > 0) {
                 b.getMenu().getMenuItems().clear();
@@ -99,7 +101,7 @@ public class BuilderService {
                     item.setMenu(menu);
                     menuItemList.add(item);
                 }
-                menu.setMenuItems(menuItemList);
+                menu.getMenuItems().addAll(menuItemList);
             }
             b.setMenu(menu);
         }
