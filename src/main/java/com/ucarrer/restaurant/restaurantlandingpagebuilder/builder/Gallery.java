@@ -24,7 +24,7 @@ public class Gallery {
     private String description;
 
     @Column(columnDefinition = "varchar(255) default ''")
-    private String imgUrl;
+    private String background;
 
     @Temporal(TIMESTAMP)
     @Column(name = "modified_at", nullable = false, columnDefinition = "TIMESTAMP  default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP")
@@ -42,14 +42,6 @@ public class Gallery {
     @JsonIgnore
     private Builder builder;
 
-    public String getImgUrl() {
-        return imgUrl;
-    }
-
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
-    }
-
     public Long getId() {
         return id;
     }
@@ -58,9 +50,18 @@ public class Gallery {
         this.id = id;
     }
 
+    public String getBackground() {
+        return background;
+    }
+
+    public void setBackground(String background) {
+        this.background = background;
+    }
+
     public String getTitle() {
         return title;
     }
+
 
     public void setTitle(String title) {
         this.title = title;

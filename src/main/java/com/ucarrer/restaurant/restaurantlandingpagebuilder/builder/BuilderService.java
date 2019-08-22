@@ -39,6 +39,7 @@ public class BuilderService {
             Gallery gallery = new Gallery();
             gallery.setTitle(builder.getGallery().getTitle());
             gallery.setDescription(builder.getGallery().getDescription());
+            gallery.setBackground(builder.getGallery().getBackground());
             gallery.setBuilder(b);
 
             if(builder.getGallery().getGalleryItems().size() > 0) {
@@ -76,7 +77,7 @@ public class BuilderService {
             Gallery gallery = b.getGallery();
             gallery.setTitle(builder.getGallery().getTitle());
             gallery.setDescription(builder.getGallery().getDescription());
-            gallery.setImgUrl(builder.getGallery().getImgUrl());
+            gallery.setBackground(builder.getGallery().getBackground());
             b.setGallery(gallery);
 
             List<GalleryItems> galleryItemsList = new ArrayList<GalleryItems>();
