@@ -1,6 +1,7 @@
 package com.ucarrer.restaurant.restaurantlandingpagebuilder.builder;
 
 import com.ucarrer.restaurant.restaurantlandingpagebuilder.user.User;
+import com.ucarrer.restaurant.restaurantlandingpagebuilder.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,18 @@ public class BuilderService {
     @Autowired
     BuilderRepository repository;
 
+    @Autowired
+    UserRepository userRepository;
+
     public Builder getBuilderByUser(User user) {
+        if (user.getBuilder() == null) {
+           /* Builder newBuilder = repository.save(new Builder());
+            newBuilder.setUser(user);
+            user.setBuilder(newBuilder);
+            userRepository.save(user);
+            return user.getBuilder();*/
+           return null;
+        }
         Builder builder = repository.findById(user.getBuilder().getId()).orElse(null);
         if (builder == null) {
             System.out.println("builder service get null");
@@ -42,7 +54,7 @@ public class BuilderService {
             gallery.setBackground(builder.getGallery().getBackground());
             gallery.setBuilder(b);
 
-            if(builder.getGallery().getGalleryItems().size() > 0) {
+            if (builder.getGallery().getGalleryItems().size() > 0) {
                 List<GalleryItems> galleryItemsList = new ArrayList<GalleryItems>();
                 for (GalleryItems item : builder.getGallery().getGalleryItems()) {
                     item.setGallery(gallery);

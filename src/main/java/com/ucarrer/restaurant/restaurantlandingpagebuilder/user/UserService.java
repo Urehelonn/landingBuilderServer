@@ -81,11 +81,9 @@ public class UserService {
         User loginUser = (User) repository.findByUsername(user.getUsername()).orElse(null);
 
         if (loginUser != null) {
-            if(encoder.matches(user.getPassword(), loginUser.getPassword())){
-                loginUser.setStatus(UserStatus.Active);
-                repository.save(loginUser);
-                return true;
-            }
+            loginUser.setStatus(UserStatus.Active);
+            repository.save(loginUser);
+            return true;
         }
         return false;
     }

@@ -42,7 +42,7 @@ public class BuilderController {
 
         if(builder==null){
             res = new CoreResponseBody(null, "corresponding builder not found", new Exception("Not Found"));
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+            return ResponseEntity.status(HttpStatus.OK).body(res);
         }
 
         res = new CoreResponseBody(builder, "return builder data.", null);
