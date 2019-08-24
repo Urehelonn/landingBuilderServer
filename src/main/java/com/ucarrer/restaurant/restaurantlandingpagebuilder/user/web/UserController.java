@@ -11,6 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 
 @RestController
@@ -70,18 +74,54 @@ public class UserController {
         return ResponseEntity.ok(res);
     }
 
+    //localhsot:8080/api/confirmation
+    @PostMapping("/confirmation")
+    @CrossOrigin(origins = "http://localhost:4200")
+    public ResponseEntity<CoreResponseBody> resendConfirmationEmail(@RequestBody String username) {
+        CoreResponseBody res;
+        User savedUser = this.userService.getUserByUsername(username);
+        if (savedUser != null && savedUser.getStatus() != UserStatus.Active) {
+            try {
+                String token = userService.createToken(savedUser);
+                String body = String.format(
+                        "please click following link to confirm your username. <a href=\"%s/api/user/confirm/%s\">Email Confirmed</a>",
+                        "http://localhost:8080", token);
+//                String to, String subject, String text
+                this.mailService.sendSimpleMessage(savedUser.getUsername(), "Please confirm your email!", body);
+            } catch (MailException e) {
+                res = new CoreResponseBody(null, "Email send failed.", e);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+            }
+            return ResponseEntity.ok(new CoreResponseBody(savedUser,
+                    "Confirmation email sent again!", null));
+        } else if (savedUser.getStatus() == UserStatus.Active) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new CoreResponseBody(null, "User already set active.",
+                    new Exception("Already actived.")));
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new CoreResponseBody(null, "Cannot match this email address with existed user.",
+                        new Exception("Not found")));
+    }
+
+
     @GetMapping("/user/confirm/{token}")
     @CrossOrigin(origins = "http://localhsot:4200")
-    public ResponseEntity<CoreResponseBody> confirmMail(@PathVariable String token) {
+    public ResponseEntity<CoreResponseBody> confirmMail(
+            @PathVariable String token,
+            HttpServletResponse httpServletResponse)
+            throws IOException {
         // validate token to see if it matches with a user who's currently inactive
         User user = this.userService.getUserByToken(token);
         // after validate succeed change user active state and stores in db (call service)
         if (user != null) {
             if (this.userService.setUserActive(user)) {
                 CoreResponseBody res = new CoreResponseBody(user, "User set status to active.", null);
+                httpServletResponse.sendRedirect("http://localhost:4200/login");
                 return ResponseEntity.ok(res);
             }
         }
+        httpServletResponse.sendRedirect("http://localhost:4200/register");
         CoreResponseBody res = new CoreResponseBody(null, "Token invalid.", new Exception("Invalid Token"));
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
     }
@@ -101,9 +141,6 @@ public class UserController {
         } else {
             User luser = userService.getUserByToken(loginToken);
             // ensure that user is active, if not return false
-//            System.out.println(luser.getStatus());
-//            System.out.println(UserStatus.Active);
-//            System.out.println(luser.getStatus() == UserStatus.Active);
             if (luser.getStatus() == UserStatus.Active) {
                 res = new CoreResponseBody(loginToken, "Login succeed.", null);
                 return ResponseEntity.ok(res);

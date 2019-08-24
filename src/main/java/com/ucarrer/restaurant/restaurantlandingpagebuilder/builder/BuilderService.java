@@ -23,7 +23,7 @@ public class BuilderService {
             user.setBuilder(newBuilder);
             userRepository.save(user);
             return user.getBuilder();*/
-           return null;
+            return null;
         }
         Builder builder = repository.findById(user.getBuilder().getId()).orElse(null);
         if (builder == null) {
@@ -46,6 +46,7 @@ public class BuilderService {
             head.setTitle(builder.getHead().getTitle());
             head.setDescription(builder.getHead().getDescription());
             head.setImgUrl(builder.getHead().getImgUrl());
+            head.setBackground(builder.getHead().getBackground());
             b.setHead(head);
 
             Gallery gallery = new Gallery();
@@ -54,7 +55,7 @@ public class BuilderService {
             gallery.setBackground(builder.getGallery().getBackground());
             gallery.setBuilder(b);
 
-            if (builder.getGallery().getGalleryItems().size() > 0) {
+            if (builder.getGallery().getGalleryItems() != null && builder.getGallery().getGalleryItems().size() > 0) {
                 List<GalleryItems> galleryItemsList = new ArrayList<GalleryItems>();
                 for (GalleryItems item : builder.getGallery().getGalleryItems()) {
                     item.setGallery(gallery);
@@ -68,7 +69,7 @@ public class BuilderService {
             menu.setTitle(builder.getMenu().getTitle());
             menu.setDescription(builder.getMenu().getDescription());
             List<MenuItem> menuItemList = new ArrayList<MenuItem>();
-            if (builder.getMenu().getMenuItems().size() > 0) {
+            if (builder.getMenu().getMenuItems() != null && builder.getMenu().getMenuItems().size() > 0) {
                 for (MenuItem item : builder.getMenu().getMenuItems()) {
                     item.setMenu(menu);
                     menuItemList.add(item);
