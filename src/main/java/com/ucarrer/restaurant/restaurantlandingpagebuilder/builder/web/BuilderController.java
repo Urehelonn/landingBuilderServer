@@ -70,6 +70,7 @@ public class BuilderController {
 
         Builder builderRes = builderService.save(builder, user);
         if (builderRes != null) {
+            System.out.println(builderRes);
             res = new CoreResponseBody(builderRes, "Builder updated.", null);
             return ResponseEntity.status(HttpStatus.OK).body(res);
         }
