@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.DefaultRedirectStrategy;
+import org.springframework.security.web.RedirectStrategy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -77,15 +79,14 @@ public class UserService {
         }
     }
 
-    public boolean setUserActive(User user){
+    public boolean setUserActive(User user) {
         User loginUser = (User) repository.findByUsername(user.getUsername()).orElse(null);
 
         if (loginUser != null) {
-            if(encoder.matches(user.getPassword(), loginUser.getPassword())){
-                loginUser.setStatus(UserStatus.Active);
-                repository.save(loginUser);
-                return true;
-            }
+            loginUser.setStatus(UserStatus.Active);
+            repository.save(loginUser);
+
+            return true;
         }
         return false;
     }
@@ -175,5 +176,10 @@ public class UserService {
         savedUser = repository.save(userInDb);
 
         return savedUser;
+    }
+
+    public User getUserByUsername(String username){
+        User userInDb = this.repository.findByUsername(username).orElse(null);
+        return userInDb;
     }
 }

@@ -42,7 +42,7 @@ public class BuilderController {
 
         if(builder==null){
             res = new CoreResponseBody(null, "corresponding builder not found", new Exception("Not Found"));
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+            return ResponseEntity.status(HttpStatus.OK).body(res);
         }
 
         res = new CoreResponseBody(builder, "return builder data.", null);
@@ -70,6 +70,7 @@ public class BuilderController {
 
         Builder builderRes = builderService.save(builder, user);
         if (builderRes != null) {
+            System.out.println(builderRes);
             res = new CoreResponseBody(builderRes, "Builder updated.", null);
             return ResponseEntity.status(HttpStatus.OK).body(res);
         }
@@ -80,11 +81,11 @@ public class BuilderController {
 
     @GetMapping("/build/{id}")
     @CrossOrigin(origins = "http://localhost:4200")
-    public ResponseEntity<CoreResponseBody> getBuilder(@PathVariable Long id) {
+    public ResponseEntity<CoreResponseBody> getBuilderById(@PathVariable Long id) {
         CoreResponseBody res;
         Builder builder = builderService.getBuilderById(id);
         if (builder == null) {
-            res = new CoreResponseBody(null, "No corresponding builder found.", new Exception("No Builder Found"));
+            res = new CoreResponseBody(null, "No corresponding builder found with this id.", new Exception("No Builder Found"));
             System.out.println("No builder with id " + id + " found.");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
         }

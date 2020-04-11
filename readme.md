@@ -39,3 +39,17 @@ GRANT ALL ON *.* TO 'ucareer'@'%';
 flush privileges;
 ```
 
+### Database Config:
+
+1. MySQL (Local)
+    - using port 3306;
+
+2. Docker Compose
+    - using port 3306, and configed in docker-compose file
+    - if 3306 is taken, check what process is using it: 
+        - sudo lsof -i:3306
+    - if it's mysql, kill the server use: 
+        - sudo service mysql stop
+        - https://askubuntu.com/questions/696927/how-come-i-get-mysqld-service-failed-to-load-no-such-file-or-directory
+        - https://tableplus.com/blog/2018/10/how-to-start-stop-restart-mysql-server.html
+        - after release port 3306, cd to application root file and up docker-compose

@@ -23,6 +23,9 @@ public class Head {
     private String description;
 
     @Column(columnDefinition = "varchar(255) default ''")
+    private String background;
+
+    @Column(columnDefinition = "varchar(255) default ''")
     private String title;
 
     @Temporal(TIMESTAMP)
@@ -33,6 +36,14 @@ public class Head {
     @OneToOne(mappedBy = "head")
     @JsonIgnore
     private Builder builder;
+
+    public String getBackground() {
+        return background;
+    }
+
+    public void setBackground(String background) {
+        this.background = background;
+    }
 
     public Long getId() {
         return id;

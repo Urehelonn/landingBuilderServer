@@ -24,7 +24,7 @@ public class GalleryItems {
     private String description;
 
     @Column(columnDefinition = "varchar(255) default ''")
-    private String imageUrl;
+    private String imgUrl;
 
     @Temporal(TIMESTAMP)
     @Column(name = "modified_at", nullable = false, columnDefinition = "TIMESTAMP  default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP")
@@ -60,12 +60,12 @@ public class GalleryItems {
         this.description = description;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getImgUrl() {
+        return imgUrl;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 
     public Date getModifiedAt() {

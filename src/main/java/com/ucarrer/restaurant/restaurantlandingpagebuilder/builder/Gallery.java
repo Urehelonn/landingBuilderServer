@@ -23,6 +23,9 @@ public class Gallery {
     @Column(columnDefinition = "varchar(255) default ''")
     private String description;
 
+    @Column(columnDefinition = "varchar(255) default ''")
+    private String background;
+
     @Temporal(TIMESTAMP)
     @Column(name = "modified_at", nullable = false, columnDefinition = "TIMESTAMP  default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP")
     @UpdateTimestamp
@@ -47,9 +50,18 @@ public class Gallery {
         this.id = id;
     }
 
+    public String getBackground() {
+        return background;
+    }
+
+    public void setBackground(String background) {
+        this.background = background;
+    }
+
     public String getTitle() {
         return title;
     }
+
 
     public void setTitle(String title) {
         this.title = title;
